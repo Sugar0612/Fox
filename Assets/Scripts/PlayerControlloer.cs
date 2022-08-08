@@ -101,7 +101,8 @@ public class PlayerControlloer : MonoBehaviour
     {
         if(collision.tag == "collectible")
         {
-            Destroy(collision.gameObject);
+            Collectibles cherry = collision.gameObject.GetComponent<Collectibles>();
+            cherry.Pick();
             cherry_count += 1;
             cherry_text.text = cherry_count.ToString();
         }
@@ -111,11 +112,13 @@ public class PlayerControlloer : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Enemy") {
+            Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             if (anim.GetBool("is_falling"))
             {
-                Destroy(collision.gameObject);
+                //Destroy(collision.gameObject);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.deltaTime);
                 anim.SetBool("is_jumping", true);
+                enemy.Death();
             }
             else if (transform.position.x < collision.gameObject.transform.position.x)
             {

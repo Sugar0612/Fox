@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Frog : MonoBehaviour
+public class Enemy_Frog : Enemy
 {
     private Rigidbody2D rb;
     private Collider2D coll;
@@ -12,13 +12,15 @@ public class Enemy_Frog : MonoBehaviour
     private bool FaceLeft;
     private float left_x, right_x;
 
-    private Animator anim;
+   // private Animator anim;
 
     // Start is called before the first frame update
-    void Start()
+    protected void Start()
     {
+        base.Start();
+
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
         coll = GetComponent<Collider2D>();
 
         left_x = leftPoint.position.x;
