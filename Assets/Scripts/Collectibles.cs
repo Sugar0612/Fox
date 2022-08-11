@@ -5,11 +5,13 @@ using UnityEngine;
 public class Collectibles : MonoBehaviour
 {
     protected Animator anim;
+    protected AudioSource pickAudio;
 
     // Start is called before the first frame update
     protected void Start()
     {
         anim = GetComponent<Animator>();
+        pickAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -20,6 +22,7 @@ public class Collectibles : MonoBehaviour
 
     public void Pick()
     {
+        pickAudio.Play();
         anim.SetTrigger("is_pick");
     }
 

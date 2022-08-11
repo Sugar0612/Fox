@@ -17,6 +17,7 @@ public class PlayerControlloer : MonoBehaviour
     public int cherry_count = 0;
     public Text cherry_text;
 
+    public AudioSource jumpAudio;
 
     //private bool is_hurt = false;
     // Start is called before the first frame update
@@ -59,6 +60,7 @@ public class PlayerControlloer : MonoBehaviour
         // ÌøÔ¾»úÖÆ
         if(Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
         {
+            jumpAudio.Play();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.deltaTime);
             anim.SetBool("is_jumping", true);
         }

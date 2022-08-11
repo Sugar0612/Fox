@@ -6,10 +6,11 @@ public class Enemy : MonoBehaviour
 {
     // Start is called before the first frame update
     protected Animator anim;
-
+    protected AudioSource deathAudio;
     protected void Start()
     {
         anim = GetComponent<Animator>();
+        deathAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -20,6 +21,7 @@ public class Enemy : MonoBehaviour
 
     public void Death()
     {
+        //deathAudio.Play();
         anim.SetTrigger("is_death");
     }
 
