@@ -18,6 +18,7 @@ public class PlayerControlloer : MonoBehaviour
     public Text cherry_text;
 
     public AudioSource jumpAudio;
+    public AudioSource HurtAudio;
 
     //private bool is_hurt = false;
     // Start is called before the first frame update
@@ -124,11 +125,13 @@ public class PlayerControlloer : MonoBehaviour
             }
             else if (transform.position.x < collision.gameObject.transform.position.x)
             {
+                HurtAudio.Play();
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(-5, rb.velocity.y);
             }
             else if (transform.position.x > collision.gameObject.transform.position.x)
             {
+                HurtAudio.Play();
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(5, rb.velocity.y);
             }

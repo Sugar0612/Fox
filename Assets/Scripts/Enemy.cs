@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
 
     public void Death()
     {
-        //deathAudio.Play();
+        deathAudio.Play();
         anim.SetTrigger("is_death");
     }
 
