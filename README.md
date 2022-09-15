@@ -5,7 +5,7 @@
 - The idea is to write it in the form of a table of contents, and different chapters correspond to different articles, which is conducive to quick search and reading, and saves the time of repeatedly watching videos.
 - Everything is for better growth and learning!
 # Menu
-- [02.编辑素材 (Edit material)]()  
+- [02.编辑素材 (Edit material)](./Menu/02.Edit_material/02.编辑素材_(Edit_material).md)  
 - [03.图层layer&角 (Layer layer & corner)]()  
 - [04.角色移动 (Character movement)]()  
 - [05.角色方向&跳跃 (Character direction & jumping)]()  
