@@ -9,6 +9,7 @@ public class PlayerControlloer : MonoBehaviour
     [SerializeField]private Rigidbody2D rb;
     private Animator anim;
     public Collider2D coll;
+    public Collider2D Head_coll;
 
     public LayerMask ground;
     public float speed;
@@ -16,6 +17,7 @@ public class PlayerControlloer : MonoBehaviour
 
     public int cherry_count = 0;
     public Text cherry_text;
+    public GameObject header;
 
     public AudioSource jumpAudio;
     public AudioSource HurtAudio;
@@ -49,7 +51,7 @@ public class PlayerControlloer : MonoBehaviour
         if(horizontal_dir != 0.0f)
         {
             /* Time.deltaTime 使在不同设备更加的平滑. */
-            rb.velocity = new Vector2(horizontal_dir * speed * Time.deltaTime, rb.velocity.y);
+            rb.velocity = new Vector2(horizontal_dir * speed * Time.fixedDeltaTime, rb.velocity.y);
             anim.SetFloat("speed", Mathf.Abs(facedir));
         }
         
@@ -59,12 +61,29 @@ public class PlayerControlloer : MonoBehaviour
         }
 
         // 跳跃机制
-        if(Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
+        if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
         {
+            Debug.Log("Jumping");
             jumpAudio.Play();
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.deltaTime);
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.fixedDeltaTime);
             anim.SetBool("is_jumping", true);
         }
+
+        #region Crouch
+        else if (!Physics2D.OverlapCircle(header.transform.position, 0.4f, ground))
+        {
+            if (Input.GetButtonDown("Crouch"))
+            {
+                anim.SetBool("is_crouch", true);
+                Head_coll.enabled = false;
+            }
+            else if (Input.GetButtonUp("Crouch") || !Input.GetButton("Crouch"))
+            {
+                anim.SetBool("is_crouch", false);
+                Head_coll.enabled = true;
+            }
+        }
+        #endregion Crouch
 
     }
 
