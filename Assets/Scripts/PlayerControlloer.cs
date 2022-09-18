@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerControlloer : MonoBehaviour
@@ -21,6 +22,7 @@ public class PlayerControlloer : MonoBehaviour
 
     public AudioSource jumpAudio;
     public AudioSource HurtAudio;
+    public AudioSource MainAudio;
 
     //private bool is_hurt = false;
     // Start is called before the first frame update
@@ -121,13 +123,25 @@ public class PlayerControlloer : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "collectible")
+        if (collision.tag == "collectible")
         {
             Collectibles cherry = collision.gameObject.GetComponent<Collectibles>();
             cherry.Pick();
             cherry_count += 1;
             cherry_text.text = cherry_count.ToString();
         }
+        else if (collision.tag == "DiedLine") {
+            MainAudio.Stop();
+
+            //Delay..
+            Invoke("Restart", 1.0f);
+        }
+    }
+
+    private void Restart()
+    {
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     /* ÏûÃðµÐÈË.. */
