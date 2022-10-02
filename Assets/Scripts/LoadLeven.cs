@@ -11,7 +11,7 @@ public class LoadLeven : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("E");
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 }

@@ -23,6 +23,7 @@ public class PlayerControlloer : MonoBehaviour
     public AudioSource jumpAudio;
     public AudioSource HurtAudio;
     public AudioSource MainAudio;
+    public Joystick joystick;
 
     //private bool is_hurt = false;
     // Start is called before the first frame update
@@ -43,6 +44,42 @@ public class PlayerControlloer : MonoBehaviour
     {
         if (anim.GetBool("hurt")) return;
 
+
+#if UNITY_ANDROID
+        float horizontal_dir = 0.0f;
+        horizontal_dir = joystick.Horizontal; // value [1, -1]
+
+        float facedir = 0.0f;
+        facedir = joystick.Horizontal; // value {1, 0, -1}
+
+        if(facedir > 0) {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        if (joystick.Vertical > 0.5f && coll.IsTouchingLayers(ground))
+        {
+            Debug.Log("Jumping");
+            jumpAudio.Play();
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.fixedDeltaTime);
+            anim.SetBool("is_jumping", true);
+        }
+        else if (!Physics2D.OverlapCircle(header.transform.position, 0.4f, ground))
+        {
+            if (joystick.Vertical < -0.5f)
+            {
+                anim.SetBool("is_crouch", true);
+                Head_coll.enabled = false;
+            }
+            else if (Input.GetButtonUp("Crouch") || !Input.GetButton("Crouch"))
+            {
+                anim.SetBool("is_crouch", false);
+                Head_coll.enabled = true;
+            }
+        }
+#elif UNITY_EDITOR_WIN
         float horizontal_dir = 0.0f;
         horizontal_dir = Input.GetAxis("Horizontal"); // value [1, -1]
 
@@ -71,7 +108,7 @@ public class PlayerControlloer : MonoBehaviour
             anim.SetBool("is_jumping", true);
         }
 
-        #region Crouch
+#region Crouch
         else if (!Physics2D.OverlapCircle(header.transform.position, 0.4f, ground))
         {
             if (Input.GetButtonDown("Crouch"))
@@ -85,8 +122,9 @@ public class PlayerControlloer : MonoBehaviour
                 Head_coll.enabled = true;
             }
         }
-        #endregion Crouch
+#endregion Crouch
 
+#endif
     }
 
     void SwitchAnim() {
@@ -127,8 +165,6 @@ public class PlayerControlloer : MonoBehaviour
         {
             Collectibles cherry = collision.gameObject.GetComponent<Collectibles>();
             cherry.Pick();
-            cherry_count += 1;
-            cherry_text.text = cherry_count.ToString();
         }
         else if (collision.tag == "DiedLine") {
             MainAudio.Stop();
@@ -169,5 +205,11 @@ public class PlayerControlloer : MonoBehaviour
                 rb.velocity = new Vector2(5, rb.velocity.y);
             }
         } 
+    }
+
+    public void UpdateCherry()
+    {
+        cherry_count++;
+        cherry_text.text = cherry_count.ToString();
     }
 }
