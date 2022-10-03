@@ -22,7 +22,6 @@ public class Collectibles : MonoBehaviour
 
     public void Pick()
     {
-        pickAudio.Play();
         GetComponent<Collider2D>().enabled = false;
         anim.SetTrigger("is_pick");
     }

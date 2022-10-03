@@ -9,6 +9,10 @@ public class PlayerControlloer : MonoBehaviour
 
     [SerializeField]private Rigidbody2D rb;
     private Animator anim;
+    private bool isGround = false;
+    private int JumpCount = 2;
+
+
     public Collider2D coll;
     public Collider2D Head_coll;
 
@@ -18,11 +22,8 @@ public class PlayerControlloer : MonoBehaviour
 
     public int cherry_count = 0;
     public Text cherry_text;
-    public GameObject header;
+    public GameObject header, foot;
 
-    public AudioSource jumpAudio;
-    public AudioSource HurtAudio;
-    public AudioSource MainAudio;
     public Joystick joystick;
 
     //private bool is_hurt = false;
@@ -31,6 +32,12 @@ public class PlayerControlloer : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+#if UNITY_ANDROID
+        joystick.gameObject.SetActive(true); 
+#elif UNITY_STANDALONE_WIN
+        joystick.gameObject.SetActive(false); 
+#endif
+
     }
 
     // Update is called once per frame
@@ -38,80 +45,83 @@ public class PlayerControlloer : MonoBehaviour
     {
         Movement();
         SwitchAnim();
+
+        isGround = Physics2D.OverlapCircle(foot.transform.position, 0.2f, ground);
     }
 
     void Movement()
     {
         if (anim.GetBool("hurt")) return;
 
-
+        float horizontal_dir = 0.0f;
+        horizontal_dir =
 #if UNITY_ANDROID
-        float horizontal_dir = 0.0f;
-        horizontal_dir = joystick.Horizontal; // value [1, -1]
+            joystick.Horizontal; // value [1, -1]
+#elif UNITY_STANDALONE_WIN
+            Input.GetAxis("Horizontal"); // value [1, -1]
+#endif
 
         float facedir = 0.0f;
-        facedir = joystick.Horizontal; // value {1, 0, -1}
-
-        if(facedir > 0) {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-
-        if (joystick.Vertical > 0.5f && coll.IsTouchingLayers(ground))
-        {
-            Debug.Log("Jumping");
-            jumpAudio.Play();
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.fixedDeltaTime);
-            anim.SetBool("is_jumping", true);
-        }
-        else if (!Physics2D.OverlapCircle(header.transform.position, 0.4f, ground))
-        {
-            if (joystick.Vertical < -0.5f)
-            {
-                anim.SetBool("is_crouch", true);
-                Head_coll.enabled = false;
-            }
-            else if (Input.GetButtonUp("Crouch") || !Input.GetButton("Crouch"))
-            {
-                anim.SetBool("is_crouch", false);
-                Head_coll.enabled = true;
-            }
-        }
-#elif UNITY_EDITOR_WIN
-        float horizontal_dir = 0.0f;
-        horizontal_dir = Input.GetAxis("Horizontal"); // value [1, -1]
-
-        float facedir = 0.0f;
-        facedir = Input.GetAxisRaw("Horizontal"); // value {1, 0, -1}
+        facedir =
+#if UNITY_ANDROID
+            joystick.Horizontal; // value [1, -1]
+#elif UNITY_STANDALONE_WIN
+        Input.GetAxisRaw("Horizontal"); // value {1, 0, -1}
+#endif
 
         //移动机制
-        if(horizontal_dir != 0.0f)
+        if (horizontal_dir != 0.0f)
         {
             /* Time.deltaTime 使在不同设备更加的平滑. */
             rb.velocity = new Vector2(horizontal_dir * speed * Time.fixedDeltaTime, rb.velocity.y);
             anim.SetFloat("speed", Mathf.Abs(facedir));
         }
-        
-        if(facedir != 0)
+
+#if UNITY_ANDROID
+        if (facedir > 0) {
+            transform.localScale = new Vector3(1, 1, 1);
+        } else {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+#elif UNITY_STANDALONE_WIN
+        if (facedir != 0)
         {
             transform.localScale = new Vector3(facedir, 1, 1);
         }
+#endif
 
         // 跳跃机制
-        if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
+        if (isGround)
+        {
+            JumpCount = 2;
+        }
+
+        if (
+#if UNITY_ANDROID
+            joystick.Vertical > 0.5f
+#elif UNITY_STANDALONE_WIN
+            Input.GetButtonDown("Jump")
+#endif
+            && JumpCount > 0)
         {
             Debug.Log("Jumping");
-            jumpAudio.Play();
+            SoundManager.Get().Jump();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.fixedDeltaTime);
             anim.SetBool("is_jumping", true);
+            anim.SetBool("is_falling", false);
+            JumpCount--;
         }
 
 #region Crouch
         else if (!Physics2D.OverlapCircle(header.transform.position, 0.4f, ground))
         {
-            if (Input.GetButtonDown("Crouch"))
+            if (
+#if UNITY_ANDROID
+                joystick.Vertical < -0.5f
+#elif UNITY_STANDALONE_WIN
+                Input.GetButtonDown("Crouch")
+#endif
+                )
             {
                 anim.SetBool("is_crouch", true);
                 Head_coll.enabled = false;
@@ -123,8 +133,6 @@ public class PlayerControlloer : MonoBehaviour
             }
         }
 #endregion Crouch
-
-#endif
     }
 
     void SwitchAnim() {
@@ -164,10 +172,11 @@ public class PlayerControlloer : MonoBehaviour
         if (collision.tag == "collectible")
         {
             Collectibles cherry = collision.gameObject.GetComponent<Collectibles>();
+            SoundManager.Get().Pick();
             cherry.Pick();
         }
         else if (collision.tag == "DiedLine") {
-            MainAudio.Stop();
+            SoundManager.Get().Stop();
 
             //Delay..
             Invoke("Restart", 1.0f);
@@ -190,17 +199,18 @@ public class PlayerControlloer : MonoBehaviour
                 //Destroy(collision.gameObject);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.deltaTime);
                 anim.SetBool("is_jumping", true);
+                SoundManager.Get().EnemDeath();
                 enemy.Death();
             }
             else if (transform.position.x < collision.gameObject.transform.position.x)
             {
-                HurtAudio.Play();
+                SoundManager.Get().Hurt();
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(-5, rb.velocity.y);
             }
             else if (transform.position.x > collision.gameObject.transform.position.x)
             {
-                HurtAudio.Play();
+                SoundManager.Get().Hurt();
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(5, rb.velocity.y);
             }

@@ -6,12 +6,12 @@
 - Everything is for better growth and learning!
 # Menu
 - [02.编辑素材 (Edit material)](https://github.com/Sugar0612/Fox/blob/main/Menu/02.Edit%20material/02.%E7%BC%96%E8%BE%91%E7%B4%A0%E6%9D%90%20(Edit%20material).md)  
-- [03.图层layer&角 (Layer layer & corner)]()  
-- [04.角色移动 (Character movement)]()  
+- [03.图层layer&角 (Layer layer & corner)](https://github.com/Sugar0612/Fox/blob/main/Menu/03.Layer&corner/03.Layer&corner.md)  
+- [04.角色移动 (Character movement)](https://github.com/Sugar0612/Fox/blob/main/Menu/04.CharacterMovement/04.CharacterMovement.md)  
 - [05.角色方向&跳跃 (Character direction & jumping)]()  
-- [06.动画效果Anima (Animation effects Anima)]()  
+- [06.动画效果Anima (Animation effects Anima)](https://github.com/Sugar0612/Fox/blob/main/Menu/06.AnimationEffects/06.AnimationEffects.md)  
 - [07.跳跃动画 Layer (Jump animation Layer)]()  
-- [09.镜头控制Cinemachine (Lens Control Cinemachine)]()  
+- [09.镜头控制Cinemachine (Lens Control Cinemachine)](https://github.com/Sugar0612/Fox/blob/main/Menu/09.Cinemachine/09.Cinemachine.md)  
 - [10.物品收集 & Prefabs (Item Collection & Prefabs)]()  
 - [11.物理材质&空中跳跃 (Physical Material & Air Jump)]()  
 - [12.UI入门 (Getting started with UI)]()  
