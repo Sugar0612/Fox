@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+    里面的代码都是关于Enemy_Frog的Move和死亡的, 我写了我认为比较精细的注释, 相信大家都可以看懂.
+ */
+ 
 public class Enemy_Frog : Enemy
 {
     private Rigidbody2D rb;
@@ -25,13 +30,13 @@ public class Enemy_Frog : Enemy
 
         left_x = leftPoint.position.x;
         right_x = rightPoint.position.x;
-        FaceLeft = (transform.localScale.x == 1.0f);
+        FaceLeft = (transform.localScale.x == 1.0f); //左边跳 or 右边跳.
     }
 
     // Update is called once per frame
     void Update()
     {
-       // Movement();
+        //Movement(); 放在了 idle动画结束之后在进行移动..(动画事件)
         SwitchAnim();
     }
 
@@ -72,12 +77,12 @@ public class Enemy_Frog : Enemy
     {
         if (anim.GetBool("is_jumping"))
         {
-            if (rb.velocity.y < 0.1f) {
+            if (rb.velocity.y < 0.1f) { //当沿着y轴的跳跃结束时, 就应该开始下降了.
                 anim.SetBool("is_jumping", false);
                 anim.SetBool("is_falling", true);
             }
         }
-        if (coll.IsTouchingLayers(ground) && anim.GetBool("is_falling"))
+        if (coll.IsTouchingLayers(ground) && anim.GetBool("is_falling")) //当接触到地面了, 那么就不应该下降了, 应该切换回idle状态.
         {
             anim.SetBool("is_falling", false);
             anim.SetBool("is_idle", true);

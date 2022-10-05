@@ -48,7 +48,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -241,4 +241,5 @@ MonoBehaviour:
   jumpAudio: {fileID: 8300000, guid: d4d41b15f8d53174d9b4e24a5ba90f59, type: 3}
   HurtAudio: {fileID: 8300000, guid: 662f8b0fe7f39d341a63968054ccc95d, type: 3}
   cherryAudio: {fileID: 8300000, guid: b41b1637a28574c4897cc00cadd39efc, type: 3}
+  EnemdeathAudio: {fileID: 0}
   audioSource: {fileID: 1890353075030647073}

@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
 
     public void Death()
     {
-        deathAudio.Play();
+        //deathAudio.Play();
         GetComponent<Collider2D>().enabled = false;
         anim.SetTrigger("is_death");
     }

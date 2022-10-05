@@ -20,7 +20,7 @@ public class PlayerControlloer : MonoBehaviour
     public float speed;
     public float jumpForce;
 
-    public int cherry_count = 0;
+    private int cherry_count = 0;
     public Text cherry_text;
     public GameObject header, foot;
 
@@ -138,7 +138,7 @@ public class PlayerControlloer : MonoBehaviour
     void SwitchAnim() {
         anim.SetBool("is_idle", false);
        
-        if(rb.velocity.y < 0.1 && coll.IsTouchingLayers(ground))
+        if(rb.velocity.y < 0.1 && !coll.IsTouchingLayers(ground))
         {
             anim.SetBool("is_falling", true);
         }
@@ -172,8 +172,8 @@ public class PlayerControlloer : MonoBehaviour
         if (collision.tag == "collectible")
         {
             Collectibles cherry = collision.gameObject.GetComponent<Collectibles>();
-            SoundManager.Get().Pick();
             cherry.Pick();
+            SoundManager.Get().Pick();
         }
         else if (collision.tag == "DiedLine") {
             SoundManager.Get().Stop();
