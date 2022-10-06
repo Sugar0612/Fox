@@ -195,7 +195,7 @@ public class PlayerControlloer : MonoBehaviour
         if (collision.gameObject.tag == "Enemy") {
             Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             if (anim.GetBool("is_falling"))
-            {
+            {           
                 //Destroy(collision.gameObject);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.deltaTime);
                 anim.SetBool("is_jumping", true);
