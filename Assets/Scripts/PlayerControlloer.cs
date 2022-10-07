@@ -11,7 +11,7 @@ public class PlayerControlloer : MonoBehaviour
     private Animator anim;
     private bool isGround = false;
     private int JumpCount = 2;
-
+    private float gravityScale_buf;
 
     public Collider2D coll;
     public Collider2D Head_coll;
@@ -26,12 +26,17 @@ public class PlayerControlloer : MonoBehaviour
 
     public Joystick joystick;
 
+    private bool isClimb = false;
+
     //private bool is_hurt = false;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+        gravityScale_buf = rb.gravityScale;
+
 #if UNITY_ANDROID
         joystick.gameObject.SetActive(true); 
 #elif UNITY_STANDALONE_WIN
@@ -45,6 +50,9 @@ public class PlayerControlloer : MonoBehaviour
     {
         Movement();
         SwitchAnim();
+
+        CheckClimb();
+        Climb();
 
         isGround = Physics2D.OverlapCircle(foot.transform.position, 0.2f, ground);
     }
@@ -76,7 +84,7 @@ public class PlayerControlloer : MonoBehaviour
             rb.velocity = new Vector2(horizontal_dir * speed * Time.fixedDeltaTime, rb.velocity.y);
             anim.SetFloat("speed", Mathf.Abs(facedir));
         }
-
+        
 #if UNITY_ANDROID
         if (facedir > 0) {
             transform.localScale = new Vector3(1, 1, 1);
@@ -104,7 +112,6 @@ public class PlayerControlloer : MonoBehaviour
 #endif
             && JumpCount > 0)
         {
-            Debug.Log("Jumping");
             SoundManager.Get().Jump();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce * Time.fixedDeltaTime);
             anim.SetBool("is_jumping", true);
@@ -135,11 +142,47 @@ public class PlayerControlloer : MonoBehaviour
 #endregion Crouch
     }
 
+    private void CheckClimb()
+    {
+        isClimb = Head_coll.IsTouchingLayers(LayerMask.GetMask("Ladder"));
+    }
+
+    private void Climb()
+    {
+        if(isClimb)
+        {
+            anim.SetBool("is_falling", false);
+
+            rb.gravityScale = 0.0f;
+            rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+            anim.SetBool("is_climb", true);
+
+            float moveY = Input.GetAxis("Vertical");
+            if ((moveY > 0.5f || moveY < -0.5f)) {
+                rb.velocity = new Vector2(0.0f, moveY * 4.0f);
+                anim.SetBool("is_climbing", true);
+            }
+            else
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+                anim.SetBool("is_climbing", false);
+            }
+        }
+        else
+        {
+            anim.SetBool("is_climbing", false);
+            anim.SetBool("is_climb", false);
+            anim.StopPlayback();
+            rb.gravityScale = 1.0f;
+        }
+    }
+
     void SwitchAnim() {
         anim.SetBool("is_idle", false);
        
-        if(rb.velocity.y < 0.1 && !coll.IsTouchingLayers(ground))
+        if(rb.velocity.y < 0.1 && !coll.IsTouchingLayers(ground) && !coll.IsTouchingLayers(LayerMask.GetMask("Ladder")))
         {
+            Debug.Log("fall");
             anim.SetBool("is_falling", true);
         }
 
@@ -205,12 +248,18 @@ public class PlayerControlloer : MonoBehaviour
             else if (transform.position.x < collision.gameObject.transform.position.x)
             {
                 SoundManager.Get().Hurt();
+                anim.SetBool("is_cilmb", false);
+                anim.SetBool("is_cilmbing", false);
+                anim.SetBool("is_falling", false);
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(-5, rb.velocity.y);
             }
             else if (transform.position.x > collision.gameObject.transform.position.x)
             {
                 SoundManager.Get().Hurt();
+                anim.SetBool("is_cilmb", false);
+                anim.SetBool("is_cilmbing", false);
+                anim.SetBool("is_falling", false);
                 anim.SetBool("hurt", true);
                 rb.velocity = new Vector2(5, rb.velocity.y);
             }
